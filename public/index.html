@@ -3,16 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Listado de Películas</title>
 </head>
 <body>
-    <h1>Listado de ordenadores</h1>
-    <a href="/subir.html">Subir Ordenador</a>
+    <h1>Listado de Películas</h1>
+    <a href="/subir.html">Subir Película</a>
     <a href="/registro.html">Registro nuevo usuario</a>
     <table id="tablaProducto">
         <thead>
             <tr>
-                <th>id</th><th>marca</th><th>Precio</th>                
+                <th>id</th><th>Título</th><th>Género</th><th>Año</th><th>Duración</th>                
             </tr>
         </thead>
         <tbody id="cuerpo-tabla">
@@ -20,39 +20,39 @@
         </tbody>
     </table>
     <script>
-        fetch('/items')
-        .then(response =>response.json())
-        .then(ordenadores=>{
+        // Cambié el endpoint de 'items' a '/peliculas' para que se ajuste a la película.
+        fetch('/peliculas')
+        .then(response => response.json())
+        .then(peliculas => {
             
-            console.log(ordenadores);
-            for ( ordenador of ordenadores){
+            console.log(peliculas);
+            for (pelicula of peliculas) {
                 fila = document.createElement('tr');
-                fila.id = ordenador._id;
-                fila.innerHTML = `<td>${ordenador._id}</td>
-                <td>${ordenador.marca}</td>
-                <td>${ordenador.precio}</td>
-                <td><button onclick=eliminaOrdenador('${ordenador._id}')>Borrar ordenador</button></td>`;
+                fila.id = pelicula._id;
+                fila.innerHTML = `<td>${pelicula._id}</td>
+                <td>${pelicula.titulo}</td>
+                <td>${pelicula.genero}</td>
+                <td>${pelicula.año}</td>
+                <td>${pelicula.duracion} min</td>
+                <td><button onclick=eliminaPelicula('${pelicula._id}')>Borrar película</button></td>`;
                 document.getElementById('cuerpo-tabla').appendChild(fila);
             }
-           
         })
-     
-        function eliminaOrdenador(id){
-            if (confirm("¿Está seguro/a?")){
-                fetch('/items/'+id,{
-                    method:'DELETE'   
-                }).
-                then(response=>{
-                    if (  esponse.ok ) {
+
+        // La función ahora elimina una película
+        function eliminaPelicula(id) {
+            if (confirm("¿Está seguro/a de que desea eliminar esta película?")) {
+                fetch('/peliculas/' + id, {
+                    method: 'DELETE'   
+                })
+                .then(response => {
+                    if (response.ok) {
                         document.getElementById(id).remove();
-                        alert("Ordenador eliminado");
+                        alert("Película eliminada");
 
+                    } else {
+                        alert("ERROR al eliminar");
                     }
-                    else
-                    {
-                        alert("ERROR al eliminar")
-                    }
-
                 })
             }
         }

@@ -1,3 +1,3 @@
-const modeloOrdenador = require('./models/ordenador');
+const modeloPelicula = require('./models/pelicula');
 const idBuscado = '67990f14919c3cd174f919ac';
-modeloOrdenador.buscaTodos();
+modeloPelicula.buscarTodas();

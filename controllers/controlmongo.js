@@ -1,29 +1,29 @@
 const mongoose = require('mongoose');
 
-mongoose.connect('mongodb+srv://andujarbosco:AU38yGaxOohnqopw@cluster0.yaak6.mongodb.net/almacen')
-  .then(() => console.log('Connected!'));
+mongoose.connect('mongodb+srv://agudomota1314:OyBlrXa8eQRiuTNg@cluster0.eivh7.mongodb.net/')
+  .then(() => console.log('Conectado a la base de datos!'))
+  .catch(err => console.error('Error de conexión a MongoDB:', err));
 
-//definimos el esquema del documento
-const ordenadorSchema = new mongoose.Schema({
-    marca:String,
-    precio:Number
+// Definimos el esquema del documento
+const peliculaSchema = new mongoose.Schema({
+    titulo: String,
+    director: String,
+    genero: String,
+    anioEstreno: Number
 });
 
-const Ordenador = mongoose.model('Ordenadore',ordenadorSchema, 'ordenadores');
+const Pelicula = mongoose.model('Pelicula', peliculaSchema, 'peliculas');
 
-const buscaPrimero = ()=>{
-  //buscamos el primer registro
-Ordenador.findOne()
-  .then( ordenador=>{
-    if (ordenador) {
-      console.log('Primer ordenador encontrado',ordenador)
-    } else {
-      console.log('No se encontró ningún registro')
-    }
-  })
-  .catch(err=>console.error('Error al obtener el ordenador',err));
-}
+const buscarPrimera = () => {
+    Pelicula.findOne()
+        .then(pelicula => {
+            if (pelicula) {
+                console.log('Primera película encontrada:', pelicula);
+            } else {
+                console.log('No se encontró ningún registro');
+            }
+        })
+        .catch(err => console.error('Error al obtener la película:', err));
+};
 
-
-module.exports = { buscaPrimero };
-
+module.exports = { buscarPrimera };

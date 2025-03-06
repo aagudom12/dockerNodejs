@@ -17,9 +17,8 @@ app.use(express.static('public'));
 app.use('/fotos', express.static('uploads'));
 app.set('view engine','ejs');
 app.set('views', './views');
-const modeloOrdenador = require('./models/ordenador');
+const modeloPelicula = require('./models/pelicula');
 const User = require("./models/User");
-
 
 // Ruta para subir archivos
 app.post('/subir', upload.single('file'), (req, res) => {
@@ -32,8 +31,7 @@ app.post('/subir', upload.single('file'), (req, res) => {
 app.get('/usuarios', (req,res)=>{
   User.find()
   .then( users=>res.json(users))
-  .catch(error=>res.status(500).json({mensaje: Err}))
-
+  .catch(error=>res.status(500).json({mensaje: error}))
 }
 )
 
@@ -41,15 +39,11 @@ app.get('/usuario/:id', (req,res)=>{
   const id=req.params.id;
   User.findById(id)
   .then( user=>res.render('usuario',{user}))
-  .catch(error=>res.status(500).json({mensaje: Err}))
-
+  .catch(error=>res.status(500).json({mensaje: error}))
 }
-
-  
 )
 
-
-//registro de usuario
+// Registro de usuario
 app.post('/registro', upload.single('foto'), (req, res) => {
   const { name, email, password } = req.body;
 
@@ -64,7 +58,6 @@ app.post('/registro', upload.single('foto'), (req, res) => {
         password: hashedPassword,
         foto: req.file.filename
       });
-
 
       // Guardar usuario
       return newUser.save();
@@ -81,7 +74,6 @@ app.post('/registro', upload.single('foto'), (req, res) => {
 app.post('/login', (req, res) => {
   const { email, password } = req.body;
 
-
   // Buscar usuario
   User.findOne({ email })
     .then(user => {
@@ -89,15 +81,12 @@ app.post('/login', (req, res) => {
         return res.status(400).json({ message: 'Credenciales inválidas' });
       }
 
-
       // Comparar contraseñas
       return bcrypt.compare(password, user.password)
         .then(isMatch => {
           if (!isMatch) {
             return res.status(400).json({ message: 'Credenciales inválidas' });
           }
-
-
           res.json({ message: 'Usuario autenticado correctamente' });
         });
     })
@@ -107,66 +96,58 @@ app.post('/login', (req, res) => {
     });
 });
 
-
-// Obtener todos los ítems
-app.get("/items", (req, res) => {
-  modeloOrdenador.buscaTodos()
+// Obtener todas las películas
+app.get("/peliculas", (req, res) => {
+  modeloPelicula.buscarTodas()
   .then(
-    ordenadores=>res.status(200).json(ordenadores)
+    peliculas => res.status(200).json(peliculas)
   )
-  .catch(err=>res.status(500).send("error"))
+  .catch(err => res.status(500).send("error"))
 });
 
-
-// Obtener un ítem por ID
-app.get("/items/:id", (req, res) => {
-  const itemId = req.params.id;
-  modeloOrdenador.buscaPorId(itemId)
+// Obtener una película por ID
+app.get("/peliculas/:id", (req, res) => {
+  const peliculaId = req.params.id;
+  modeloPelicula.buscarPorId(peliculaId)
   .then(
-    ordenador=>res.status(200).json(ordenador)
+    pelicula => res.status(200).json(pelicula)
   )
-  .catch(err=>res.status(500).send("error"))
+  .catch(err => res.status(500).send("error"))
 });
 
-
-// Crear un nuevo ítem
-app.post("/items", (req, res) => {
-    marca= req.body.marca;
-    precio= req.body.precio;
-    modeloOrdenador.creaNuevoOrdenador(marca,precio)
+// Crear una nueva película
+app.post("/peliculas", (req, res) => {
+    titulo = req.body.titulo;
+    director = req.body.director;
+    anio = req.body.anio;
+    genero = req.body.genero;
+    modeloPelicula.crearNuevaPelicula(titulo, director, anio, genero)
     .then(
-      ordenador=>res.status(200).json(ordenador)
+      pelicula => res.status(200).json(pelicula)
     )
-    .catch(err=>res.status(500).send("error"))
-
+    .catch(err => res.status(500).send("error"))
 });
 
-
-// Actualizar un ítem existente
-app.put("/items/:id", (req, res) => {
-  const itemId = req.params.id;
-  ordenador = req.body;
-  //res.send(ordenador);
-  modeloOrdenador.actualizaOrdenador(itemId,ordenador)
+// Actualizar una película existente
+app.put("/peliculas/:id", (req, res) => {
+  const peliculaId = req.params.id;
+  pelicula = req.body;
+  modeloPelicula.actualizarPelicula(peliculaId, pelicula)
   .then(
-    ordenadorAtualizado=>res.status(200).json(ordenadorAtualizado)
+    peliculaActualizada => res.status(200).json(peliculaActualizada)
   )
-  .catch(err=>res.status(500).send("error al actualizar el ordenador"))
-
+  .catch(err => res.status(500).send("error al actualizar la película"))
 });
 
-
-// Eliminar un ítem
-app.delete("/items/:id", (req, res) => {
-  const itemId = req.params.id;
-  modeloOrdenador.borraOrdenador(itemId)
+// Eliminar una película
+app.delete("/peliculas/:id", (req, res) => {
+  const peliculaId = req.params.id;
+  modeloPelicula.borrarPelicula(peliculaId)
   .then(
-    ordenador=>res.status(200).json(ordenador)
+    pelicula => res.status(200).json(pelicula)
   )
-  .catch(err=>res.status(500).send("error"))
-
+  .catch(err => res.status(500).send("error"))
 });
-
 
 // Iniciar el servidor
 app.listen(port, () => {

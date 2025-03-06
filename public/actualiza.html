@@ -3,91 +3,90 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>Lista de Películas</title>
     <style>
         #id { display: none;}
     </style>
 </head>
 <body>
-    <h1>Lista Ordenadores</h1>
-    <a href="/actualiza.html">Actualizar ordenadores</a>
-    <select name="seleccionaOrdenador" id="seleccionaOrdenador">
+    <h1>Lista de Películas</h1>
+    <a href="/actualiza.html">Actualizar Películas</a>
+    <select name="seleccionaPelicula" id="seleccionaPelicula">
 
     </select>
     <script>
        
         const creaSelect = ()=>{
-            fetch('/items')
+            fetch('/peliculas')
         .then(response=>response.json())
         .then(
-            ordenadores=>{
-                const selectOrd = document.getElementById("seleccionaOrdenador");
-                while (selectOrd.firstChild) {
-                    selectOrd.removeChild(selectOrd.firstChild);
+            peliculas=>{
+                const selectPelicula = document.getElementById("seleccionaPelicula");
+                while (selectPelicula.firstChild) {
+                    selectPelicula.removeChild(selectPelicula.firstChild);
                 }
 
-                for ( ordenador of ordenadores){
+                for (pelicula of peliculas){
                     let opcion = document.createElement('option');
-                    opcion.value = ordenador._id;
-                    opcion.innerHTML = ordenador.marca +'-' + ordenador.precio;
-                    document.getElementById("seleccionaOrdenador").appendChild(opcion)
+                    opcion.value = pelicula._id;
+                    opcion.innerHTML = pelicula.titulo + ' - ' + pelicula.genero;
+                    document.getElementById("seleccionaPelicula").appendChild(opcion);
                 }
             }
         ).catch(err=>alert(err))
 
         }
-        
 
-
-        const traeOrdenador=()=>{
-            id = document.getElementById("seleccionaOrdenador").value;
-            fetch('/items/' + id)
-            .then( response =>response.json())
-            .then( ordenador => {
-                document.getElementById('id').value = ordenador._id;
-                document.getElementById('marca').value = ordenador.marca;
-                document.getElementById('precio').value = ordenador.precio;
-
+        const traePelicula=()=>{
+            id = document.getElementById("seleccionaPelicula").value;
+            fetch('/peliculas/' + id)
+            .then(response => response.json())
+            .then(pelicula => {
+                document.getElementById('id').value = pelicula._id;
+                document.getElementById('titulo').value = pelicula.titulo;
+                document.getElementById('genero').value = pelicula.genero;
+                document.getElementById('año').value = pelicula.año;
+                document.getElementById('duracion').value = pelicula.duracion;
             })
-
         }
 
-        const actualizaOrdenador = ()=>{
-            let marca = document.getElementById('marca').value;
-            let precio = Number(document.getElementById('precio').value);
-            let id=document.getElementById("seleccionaOrdenador").value;
-                fetch('/items/' + id,{
-                    method: 'PUT',
-                    headers: {
-                        'Content-Type' : 'application/JSON'
-                    },
-                    body: JSON.stringify({marca, precio})
-                }).then(
-                    ordenador=>{
-                        if ( ordenador ) {
-                            creaSelect();
-                            alert("ordenador ACTUALIZADO")
-                        } else {
-                            alert("No se insertó el ordenador")
-                        }
+        const actualizaPelicula = ()=>{
+            let titulo = document.getElementById('titulo').value;
+            let genero = document.getElementById('genero').value;
+            let año = Number(document.getElementById('año').value);
+            let duracion = Number(document.getElementById('duracion').value);
+            let id = document.getElementById("seleccionaPelicula").value;
+            
+            fetch('/peliculas/' + id, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/JSON'
+                },
+                body: JSON.stringify({titulo, genero, año, duracion})
+            }).then(
+                response => {
+                    if (response.ok) {
+                        creaSelect();
+                        alert("Película actualizada");
+                    } else {
+                        alert("No se actualizó la película");
                     }
-
-                )
-                .catch(err=>{
-                    alert(err);
-                })
-
-
+                }
+            )
+            .catch(err => {
+                alert(err);
+            })
         }
-        document.getElementById("seleccionaOrdenador").addEventListener('change',traeOrdenador);
+
+        document.getElementById("seleccionaPelicula").addEventListener('change', traePelicula);
         creaSelect();
-        traeOrdenador();
+        traePelicula();
     </script>
     <input type="text" name="id" id="id">
-    <p>Marca: <input type="text" name="marca" id="marca"></p>
-    <p>Precio: <input type="number" name="precio" id="precio"></p>
-    <button id="btn-insertar" onclick="actualizaOrdenador()">Actualiza</button>
-    
-
-    </body>
+    <p>Título: <input type="text" name="titulo" id="titulo"></p>
+    <p>Género: <input type="text" name="genero" id="genero"></p>
+    <p>Año: <input type="number" name="año" id="año"></p>
+    <p>Duración (min): <input type="number" name="duracion" id="duracion"></p>
+    <button id="btn-insertar" onclick="actualizaPelicula()">Actualizar</button>
+</body>
 </html>
